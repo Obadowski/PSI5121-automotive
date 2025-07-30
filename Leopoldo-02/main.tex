@@ -1,0 +1,47 @@
+\documentclass[12pt, a4paper]{article}
+
+\usepackage{fullpage}
+\usepackage[utf8]{inputenc}
+\usepackage[brazilian]{babel}
+\usepackage{url}
+
+\usepackage[style=abnt,backend=biber,language=portuguese]{biblatex}
+\addbibresource{refs.bib} % ou o nome real do seu .bib
+
+\DeclareFieldFormat{url}{\texttt{\url{#1}}}
+\DeclareFieldFormat{urldate}{Acesso em:~#1}
+\renewcommand*{\biburlsetup}{\Urlmuskip=0mu plus 1mu\relax}
+\urlstyle{tt}
+
+
+\usepackage{lipsum}
+
+\title{Relatório 01 -- DARPA Challenge}
+\author{Vinícius Obadowski}
+\date{Julho 2025}
+
+\usepackage[hidelinks]{hyperref}
+        
+\begin{document}
+
+\maketitle
+
+\section{Introdução}
+
+Este relatório apresenta breves comentários sobre quatro vídeos \cite{cleanerwatt,basicthinking,frankyoutube} sobre tecnologia de carros autônomos e suas perspectivas futuras. Além disso, na segunda parte é apresentada uma avaliação do artigo \cite{Pendleton2017Autonomous} sobre percepção, planejamento, controle e coordenação de veículos autônomos.
+
+\section{Vídeos}
+
+\input{_videos.tex}
+
+\section{Análise Comparativa BOSS e STANLEY}
+
+\input{_analise.tex}
+
+% \bibliographystyle{plain}  % ou plain, alpha, etc.
+% \bibliography{refs}
+\printbibliography
+
+
+\end{document}
+

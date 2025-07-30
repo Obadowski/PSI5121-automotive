@@ -1,0 +1,57 @@
+\subsection{Introdução}
+
+Esta seção do relatório visa apresentar uma visão crítica entre dois artigos: sobre o vencedor do Grand Challenge de 2005 no Deserto de Mojave, STANLEY \cite{thrun2006stanley}, e o vencedor do Urban Challenge de 2007, também promovido pela DARPA, o veículo BOSS \cite{urmson2008autonomous}. Ambos apresentaram-se como grandes soluções tecnológicas para o desafio do veículo autônomo cujas soluções adotadas influenciaram de forma determinante os conceitos de veículos autônomos posteriores.
+
+STANLEY, desenvolvido pela Universidade de Stanford em parceria com a Volkswagen e outras empresas, conquistou o primeiro lugar ao completar com sucesso um percurso de 132 milhas (aproximadamente 212 quilômetros) pelo deserto de Mojave em 6 horas, 53 minutos e 58 segundos. Dois anos depois, BOSS, criado pela equipe Tartan Racing (Carnegie Mellon University, General Motors e parceiros), venceu um desafio ainda mais complexo: navegar autonomamente por 97 quilômetros em ambiente urbano, interagindo com outros veículos e obedecendo às regras de trânsito da Califórnia.
+
+A evolução entre estes dois projetos reflete não apenas avanços tecnológicos, mas também uma mudança fundamental nos requisitos de navegação autônoma: da travessia de terrenos desérticos sem obstáculos móveis para a complexa interação em ambientes urbanos dinâmicos. Esta análise examina as arquiteturas de software de ambos os sistemas, destacando suas semelhanças, diferenças e as lições aprendidas que moldaram o futuro dos veículos autônomos.
+
+\subsection{Arquitetura da STANLEY}
+
+O veículo vencedor do desafio de 2005, STANLEY, foi construído sobre um Volkswagen Touareg R5 TDI 2004, equipado com uma plataforma computacional de seis processadores Intel e um conjunto abrangente de sensores. A filosofia central do projeto tratava a navegação autônoma fundamentalmente como um problema de software.
+
+Conceitualmente, a arquitetura de processamento de dados adotado no STANLEY foi concebida em 6 camadas funcionais:
+\begin{enumerate}
+    \item Interface de sensores: Responsável pela comunicação com todos os sensores do veículo, incluindo cinco scanners laser SICK LMS, uma câmera colorida, um sistema de radar, GPS com correções diferenciais, uma bússola GPS e uma unidade de medição inercial (IMU).
+    \item Percepção: nesta camada ocorre o mapeamento dos dados dos sensores nos modelos internos. O principal módulo interno nesta camada é o unscented Kalman Filter (UCF) que opera como estimador de estados do veículo, que servia para determinar coordenadas, orientação e velocidade.
+    \item Controle: esta camada executada o controle de manobra (``steering'' e ``throttle'', direção e aceleração) bem como frenagem do veículo. Duas malhas fechadas executavam as trajetórias, uma para direção e a outra para aceleração e frenagem do veículo.
+    \item Interface com o veículo: fazia a conversão das decisões do software para comandos reais a serem executados pelo veículo. Em outras palavras, o ``driver'' do sistema que convertia sinais digitais em comandos analógicos.
+    \item Interface com o usuário: uma camada cujo objetivo servia como inicialização do sistema de inicialização do software.
+    \item Serviços globais: estava camada estavam todos os serviços comuns para as outras, incluindo elementos inter-processos, servidor de parâmetros, sincronização de ``clock'' e monitoramento do sistema (fazendo as vezes de ``watch-dog''). Além disso, fazia o controle do log de eventos de todas as camadas.
+\end{enumerate}
+
+Com os dados de todas as camadas, o veículo empregava (em sua camada de Percepção) filtros de Kalman com monitoramento de 15 variáveis para determinar sua posição no terreno mapeado por meio do conjunto de lasers e quais os próximos pontos para onde deveria se dirigir. A adoção do UKF foi feita em vista de uma menor necessidade de cálculos extensos (determinação de jacobianos), permitindo linearizações menos custos computacionalmente.
+
+\subsection{Arquitetura do BOSS}
+
+O desafio urbano promovido pela DARPA em 2007 teve como vencedor o veículo BOSS, construído sobre uma plataforma Chevrolet Tahoe 2007 com modificações específicas para navegação autônoma. Em termos de hardware, o veículo empregava chassi CompactPCI com 10 processadores Core2Duo de 2.16 GHz, cada um com 2 GB de memória.
+
+A arquitetura de software do BOSS apresentava uma estruturação em três subsistemas principais:
+\begin{enumerate}
+    \item Planejamento de movimento: Consistia em dois planejadores complementares capazes de evitar obstáculos estáticos e dinâmicos. O veículo operava com dois cenários principais: navegação estruturada e não estruturada. O primeiro atendia as necessidades de navegação por ruas e ambientes definidos por regras mais amplas, enquanto o segundo objetivava fornecer mecanismos para operação em estacionamentos, por exemplo.
+    \item Percepção: processava e fundia dados de múltiplos sensores a fim de construir um modelo do mundo internamente cuja composição era dividida em três segmentos: (1) mapa de obstáculos; (2) lista de veículos em movimento no ambiente; (3) localização do BOSS relativa à estrada.
+    \item Planejador de Missão: buscava imitar o comportamento de um planejador humano de rotas, buscando identificar o caminho de menor custo para o próximo objetivo, considerando bloqueios, limites de velocidades e tempo para execução de manobras.
+\end{enumerate}
+
+Em termos de sensores e hardware operava com um hardware com Sistema GPS/IMU Applanix; Múltiplos LIDARs (SICK LMS (180°/90°), Velodyne HDL-64 (360° x 26°), Continental ISF, IBEO Alasca XT (240°, alcance de 300m)); Radares Continental ARS 300; e Câmera Point Grey Firefly: Alta faixa dinâmica para percepção visual. 
+
+\subsection{Comparativo}
+
+A transição de STANLEY para BOSS representa uma evolução fundamental nos requisitos de veículos autônomos. Enquanto STANLEY enfrentava o desafio de navegação em alta velocidade através de terreno desértico estático, BOSS precisava navegar em ambientes urbanos dinâmicos com múltiplos agentes móveis e regras de trânsito complexas.
+
+A arquitetura do vencedor de 2005 centrava-se em ``resolver'' o desafio de travessia do deserto de Mojave através de um pipeline unidirecional simples: sensores para atuadores, com mapas 2D do ambiente e planejamento local de trajetória. Seus cinco scanners laser SICK foram adequados para detectar obstáculos estáticos em terreno irregular com poeira excessiva, rampas e declives acentuados. Em contraste, a concepção do vencedor de 2007 adotou uma abordagem hierárquica em três níveis (planejamento de missão, comportamental e de movimento) para navegar em ambientes urbanos. BOSS empregava um conjunto sensorial mais amplo incluindo o Velodyne HDL-64 de 360°, múltiplos LIDARs especializados e radares de longo alcance, essenciais para rastrear dezenas de veículos simultaneamente, prever seus movimentos e tomar decisões táticas como mudanças de faixa e precedência em interseções.
+
+Pela análise dos artigos, percebe-se que as estratégias de confiabilidade e segurança também distinguiam-se. STANLEY focava em redundância de software através de monitoramento e reinicialização de módulos, adequado para ambientes estáticos onde parar era sempre uma opção segura. Ao passo que o BOSS precisava continuar funcionando mesmo com falhas parciais, implementando degradação parcial, modos de operação alternativos e uma maior redundância de hardware. O sistema comportamental de BOSS era mais sofisticado que o do STANLEY, capaz de identificar e recuperar-se de situações anômalas como bloqueios temporários, interseções congestionadas ou falhas de percepção, capacidades essenciais para navegação urbana segura que STANLEY, focado em terreno aberto, não precisava implementar.
+
+Taticamente, pode-se observar que a DARPA como instituição buscou constituir dois objetivos principais tecnológicos distintos: estabelecer as melhores tecnologias para navegação em ambiente agressivo, porém isolado; definir as melhores soluções técnicas para navegação urbana e em ambientes com obstáculos percebíveis localmente. A navegação de longa distância em um deserto pode ser auxiliada por meio de imagens satelitais do ambiente, ao passo que a urbana carece de tal recurso, sendo um ambiente sujeito a interferências locais de forma tal que um sistema externo não conseguiria apoiar diretamente. Portanto, a existência de dois vencedores com arquiteturas distintas apresenta-se como grande contribuição tecnológica que inspirou diversas soluções posteriores.
+
+\subsection{Conclusão}
+A análise comparativa de STANLEY e BOSS revela uma evolução notável na tecnologia de veículos autônomos em apenas dois anos. STANLEY demonstrou que navegação autônoma em alta velocidade era possível com arquitetura de software bem projetada e uso inteligente de técnicas de inteligência artificial. 
+
+Complementarmente, BOSS construiu sobre estas fundações, mas as expandiu para enfrentar a complexidade sensivelmente maior da condução urbana. A necessidade de interagir com outros agentes, obedecer regras de trânsito complexas e navegar em ambientes estruturados e não estruturados levou a inovações em múltiplas frentes: arquitetura hierárquica mais profunda, redundância sensorial, sistemas de percepção e rastreamento, e camada comportamental capaz de processar diversos cenários distintos simultaneamente.
+
+O legado destes projetos vai além de suas vitórias nas competições DARPA. STANLEY provou a viabilidade da navegação autônoma e estabeleceu a abordagem baseada em software que domina o campo até hoje. BOSS demonstrou que veículos autônomos poderiam operar com segurança em ambientes urbanos complexos, pavimentando o caminho para os esforços comerciais atuais em direção a carros totalmente autônomos.
+
+A luz dos vídeos apresentados no início do trabalho, percebe-se que muitas das inovações propostas tanto no STANLEY quanto no BOSS foram incorporados no modelo Audi A8 que empregava redes de sensores para identificação de obstáculos, e mais tarde os sistemas de aprendizado influenciaram a maneira como sistemas autônomos de navegação ``aprendem'' motivando a criação e emprego de supercomputadores para seu treinamento, a exemplo do empreendimento promovido pela Tesla.
+
+Percebe-se que desde as primeiras competições e seus resultados promissores, muitas tecnologias, embora semi-autônomas, estejam em progresso comercialmente, há iniciativas ousadas em promover a adoção do carro totalmente autônomo. E dado o ritmo de melhorias das tecnologias, é razoável supor que em um horizonte de poucos anos, e não na próxima geração como previa Chris Urmson em seu TED Talk, esteja disponível o primeiro veículo 100\% autônomo autorizado a operar.

@@ -1,7 +1,7 @@
 .PHONY: clean
 
 # Define the LaTeX trash
-TRASH_EXTENSIONS = aux log toc out lof lot bbl blg fdb_latexmk fls synctex.gz nav snm
+TRASH_EXTENSIONS = aux log toc out lof lot bbl blg fdb_latexmk fls synctex.gz nav snm xml bcf
 
 clean:
 	@echo "Scouring the academic wasteland for LaTeX garbage..."

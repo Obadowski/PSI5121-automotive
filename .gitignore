@@ -1,0 +1,47 @@
+# Arquivos gerados por LaTeX
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.brf
+*.log
+*.lof
+*.lot
+*.out
+*.toc
+*.fdb_latexmk
+*.fls
+*.synctex.gz
+*.run.xml
+*.xdv
+
+# Arquivos temporários ou lixo geral
+*.nav
+*.snm
+*.vrb
+*.dvi
+*.pdfsync
+*.thm
+*.idx
+*.ilg
+*.ind
+*.acn
+*.glo
+*.gls
+*.ist
+*.xdy
+
+# MacOS e editores
+.DS_Store
+*.swp
+*.bak
+*.tmp
+*.backup
+*~
+*.tgz
+
+# VSCode stuff
+.vscode/
+
+# Diretório de build, se usar latexmk com saída separada
+build/
